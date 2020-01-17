@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:garuda_cabin_mobile/models/user.dart';
-import 'package:garuda_cabin_mobile/responses/user_response.dart';
 import 'package:garuda_cabin_mobile/utils/network_util.dart';
 
 
@@ -16,14 +15,18 @@ class ApiService{
   //get User detail
   Future<User> login(String username, String password) async{
     var body = json.encode({"username":username,"password":password});
-    return _networkUtil.post(LOGIN_URL, body: body,
-      headers: {
-      'Content-Type': 'application/json'
-    }).then((dynamic res) {
-      if(res != null){
-        this.code = res['code'].cast<String,int>();
+    Map headers = <String, String>{
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+    };
+    return _networkUtil.post(LOGIN_URL, body: body,headers: headers).then((dynamic res) {
+      print(res.toString());
+      if(res['code'] != 200){
+       return throw new Exception(res["message"]);
       }
-      return new User.map(jsonDecode(jsonEncode(res)));
+      else {
+        return new User.map(res['data']);
+      }
     });
   }
 }

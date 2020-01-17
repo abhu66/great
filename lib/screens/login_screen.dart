@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:garuda_cabin_mobile/auth.dart';
+import 'package:garuda_cabin_mobile/database/database_helper.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
 import 'package:garuda_cabin_mobile/presenters/login_presenter.dart';
+import 'package:garuda_cabin_mobile/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -15,7 +18,7 @@ class LoginScreen extends StatefulWidget {
   }
 }
 
-class _LoginScreenState extends State<LoginScreen> implements LoginScreenContract{
+class _LoginScreenState extends State<LoginScreen> implements LoginScreenContract,AuthStateListener{
   final formKey = new GlobalKey<FormState>();
   bool _isLoading = false;
   LoginScreenPresenter _presenter;
@@ -25,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
 
   _LoginScreenState(){
     _presenter = new LoginScreenPresenter(this);
+    var authStateProvider = new AuthStateProvider();
+    authStateProvider.subscribe(this);
   }
 
   void _loginProcess(){
@@ -59,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
                 children: <Widget>[
                   _iconLogin(),
                   _formLogin(),
-                  _buildButtonLogin(context),
+                  AbsorbPointer(child:_buildButtonLogin(context),
+                  absorbing: _isLoading ? true : false,),
                   _logo(),
                   SizedBox(
                     height: 100.0,
@@ -159,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
               },
               color: Colors.white,
               textColor: Colors.blue,
-              child: _isLoading ? CircularProgressIndicator() :
+              child: _isLoading ? _loadingIndicator():
                   Text("Log in".toUpperCase(), style: TextStyle(fontSize: 14)),
             ),
           ),
@@ -200,28 +206,62 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
     );
   }
 
+  Widget _loadingIndicator() {
+    return Container(
+        width: 20.0,
+        height: 20.0,
+        child: (CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Colors.blue,
+          ),
+          strokeWidth: 3.0,
+        ))
+    );
+  }
+
   @override
   void onLoginError(String errorTxt) {
-    setState(() => _isLoading = false);
+    setState((){
+      _isLoading = false;
+
+    });
     print("Error data : "+errorTxt);
   }
 
   @override
-  void onLoginSuccess(User user) {
+  void onLoginSuccess(User user) async{
     setState(() => _isLoading = false);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: new Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              new Text("Login Success"),
-            ],
-          ),
-        );
-      },
-    );
+    var db = new DatabaseHelper();
+    await db.saveUser(user);
+    _user = await db.getUser();
+    var authStateProvider = new AuthStateProvider();
+    authStateProvider.notify(AuthState.LOGGED_IN);
+//    showDialog(
+//      context: context,
+//      barrierDismissible: false,
+//      builder: (BuildContext context) {
+//        return Dialog(
+//          child: new Row(
+//            mainAxisSize: MainAxisSize.min,
+//            children: [
+//              new Text("Login Success ${user.username}"),
+//            ],
+//          ),
+//        );
+//      },
+//    );
+  }
+
+  @override
+  void onAuthStateChanged(AuthState state) async{
+    if(state == AuthState.LOGGED_IN) {
+      var db = new DatabaseHelper();
+      _user = await db.getUser();
+      Navigator.of(context).pushReplacement(
+          new MaterialPageRoute(settings: const RouteSettings(name: '/home'),
+              builder: (context) => new HomeScreen(user: _user,)
+          )
+      );
+    }
   }
 }

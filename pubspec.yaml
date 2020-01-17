@@ -28,7 +28,6 @@ dependencies:
   sqflite: ^1.2.0
   path_provider: ^1.5.1
   rflutter_alert: ^1.0.3
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -56,6 +55,8 @@ flutter:
     - assets/images/image_116.png
     - assets/images/image_116_3x.png
     - assets/images/image_3x.png
+    - assets/images/cabin_mobile_header_img-3x.png
+    - assets/images/user.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
