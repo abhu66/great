@@ -6,7 +6,7 @@ import 'package:garuda_cabin_mobile/auth.dart';
 import 'package:garuda_cabin_mobile/database/database_helper.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
 import 'package:garuda_cabin_mobile/presenters/login_presenter.dart';
-import 'package:garuda_cabin_mobile/screens/home_screen.dart';
+import 'package:garuda_cabin_mobile/utils/base_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -21,9 +21,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> implements LoginScreenContract,AuthStateListener{
   final formKey = new GlobalKey<FormState>();
   bool _isLoading = false;
+  GlobalKey _scaffoldKey = new GlobalKey();
   LoginScreenPresenter _presenter;
   User _user;
   String _username, _password;
+  Function onTapButtonAlertAction;
+  WidgetUtil _widgetUtil = new WidgetUtil();
+  bool _obscureText = true;
 
 
   _LoginScreenState(){
@@ -49,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
       DeviceOrientation.portraitUp,
     ]);
     return Scaffold(
+        key : _scaffoldKey,
         backgroundColor: Colors.blue,
         body: Stack(
           children: <Widget>[
@@ -125,8 +130,18 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
                 validator: (val) {
                   return val.length < 1 ? "Password is required" : null;
                 },
-                obscureText: true,
+                obscureText:_obscureText,
+
                 decoration: InputDecoration(
+                  suffixIcon: new GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                    child:
+                    new Icon(_obscureText ? Icons.visibility : Icons.visibility_off , color:Colors.white),
+                  ),
                   errorStyle: TextStyle(color: Colors.white),
                   icon: Icon(Icons.lock, color: Colors.white),
                   labelText: 'Password',
@@ -223,7 +238,9 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
   void onLoginError(String errorTxt) {
     setState((){
       _isLoading = false;
-
+      _widgetUtil.showErrorAlert(context,
+          null,
+          "Login Failed",errorTxt);
     });
     print("Error data : "+errorTxt);
   }
@@ -236,20 +253,12 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
     _user = await db.getUser();
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN);
-//    showDialog(
-//      context: context,
-//      barrierDismissible: false,
-//      builder: (BuildContext context) {
-//        return Dialog(
-//          child: new Row(
-//            mainAxisSize: MainAxisSize.min,
-//            children: [
-//              new Text("Login Success ${user.username}"),
-//            ],
-//          ),
-//        );
-//      },
-//    );
+    _widgetUtil.showSuccessLoginAlert(context,
+        null,
+        "Login Success" ,
+        _user.name,
+        _user
+    );
   }
 
   @override
@@ -257,11 +266,7 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
     if(state == AuthState.LOGGED_IN) {
       var db = new DatabaseHelper();
       _user = await db.getUser();
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(settings: const RouteSettings(name: '/home'),
-              builder: (context) => new HomeScreen(user: _user,)
-          )
-      );
     }
   }
+
 }

@@ -4,6 +4,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:garuda_cabin_mobile/database/database_helper.dart';
+import 'package:garuda_cabin_mobile/models/user.dart';
+import 'package:garuda_cabin_mobile/screens/home_screen.dart';
 import 'package:garuda_cabin_mobile/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget{
@@ -37,22 +40,14 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
 
   startSplashScreen() async {
     var duration = const Duration(seconds: 5);
-//    var db = new DatabaseHelper();
-//    Karyawan k = await db.getKaryawan();
-//    String path = k == null ? "/login" : "/home";
-//    return Timer(duration, (){
-//      Navigator.of(context).pushReplacement(
-//          new MaterialPageRoute(
-//              settings: RouteSettings(name: '$path'),
-//              builder: (context) => k == null ? new LoginScreen() : new HomeScreen(karyawan: k,)
-//          )
-//      );
-//    });
-
+    var db = new DatabaseHelper();
+    User user = await db.getUser();
+    String path = user == null ? "/login" : "/home";
     return Timer(duration, (){
       Navigator.of(context).pushReplacement(
           new MaterialPageRoute(
-              builder: (context) => new LoginScreen(),
+              settings: RouteSettings(name: '$path'),
+              builder: (context) => user == null ? new LoginScreen() : new HomeScreen(user: user,)
           )
       );
     });

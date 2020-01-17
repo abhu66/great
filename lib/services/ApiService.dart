@@ -9,6 +9,7 @@ import 'package:garuda_cabin_mobile/utils/network_util.dart';
 class ApiService{
   static final String BASE_URL            = "http://api-dev.asyst.co.id/great-api/api/v1/"; //PUBLIC
   static final String LOGIN_URL           = BASE_URL + "user/login";
+  static final String GET_MASTER_POINT    = BASE_URL + "point/getMasterPoint";
   NetworkUtil  _networkUtil               = new NetworkUtil();
   String API_KEY = "API-KEY";
   String code = '';
