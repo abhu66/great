@@ -103,59 +103,46 @@ class HomeScreen extends StatelessWidget{
 
   Widget _buildButtonLogin(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 20.0),
-        ),
-        InkWell(
-          onTap: () {
-            //_loginProcess();
-          }, //
-          child: Container(
-            width: double.infinity,
-            child: RaisedButton(
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5.0),
-                  side: BorderSide(color: Colors.transparent)),
-              onPressed: () {
-              },
-              color: Colors.white,
-              textColor: Colors.blue,
-              child:
-              Text("Cabin", style: TextStyle(fontSize: 14,)),
+        SizedBox(height: 10,),
+        SizedBox(
+          height: 35.0,
+          child: RaisedButton(
+            elevation: 0.0,
+            color: Color(0xffF3F3FE),
+            child: Center(
+              child: Text(
+                'Cabin',
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
+            onPressed: () {},
           ),
+            //absorbing:_selectedIndex != -1 ? false : true
         ),
-        Padding(
-          padding: EdgeInsets.only(top: 5.0),
-        ),
-        InkWell(
-          onTap: () {
-            //_loginProcess();
-          }, //
-          child: Container(
-            width: double.infinity,
-            child: RaisedButton(
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5.0),
-                  side: BorderSide(color: Colors.transparent)),
-              onPressed: () {
+        SizedBox(height: 10,),
+        SizedBox(
+          height: 35.0,
+          child: RaisedButton(
+            elevation: 0.0,
+            color: Color(0xffF3F3FE),
+            child: Center(
+              child: Text(
+                'Non Cabin',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            onPressed: () {
                 Navigator.of(context).pushReplacement(
                     new MaterialPageRoute(settings: const RouteSettings(name: '/great'),
                         builder: (context) => new Great(user: user,)
                     )
                 );
-              },
-              color: Colors.white,
-              textColor: Colors.blue,
-              child:
-              Text("Non Cabin", style: TextStyle(fontSize: 14,)),
-            ),
+            },
           ),
-        )
+        ),
       ],
     );
   }
-
-
 }

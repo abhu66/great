@@ -3,13 +3,24 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:garuda_cabin_mobile/activitys/great_history.dart';
+import 'package:garuda_cabin_mobile/models/master_point.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
+import 'package:garuda_cabin_mobile/presenters/master_point_presenter.dart';
+import 'package:garuda_cabin_mobile/services/ApiService.dart';
 import 'package:garuda_cabin_mobile/widgets/redeem_widget.dart';
 
-class PointWidget extends StatelessWidget {
+class PointWidget extends StatefulWidget {
 
   PointWidget({Key key, this.user}) : super(key:key);
   final User user;
+
+  @override
+  _PointWidgetState createState() => _PointWidgetState();
+}
+
+class _PointWidgetState extends State<PointWidget> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,7 +48,7 @@ class PointWidget extends StatelessWidget {
               Material(
                 color: Colors.transparent,
                 child: Text(
-                  user.total_point,
+                  widget.user.total_point,
                   style: TextStyle(
                     color: Color(0xff464855),
                     fontFamily: 'Regular',
@@ -70,15 +81,17 @@ class PointWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Color(0xffF3F3FE),
                     ),
-                    child: GestureDetector(
-                      child: Icon(
-                        Icons.history,
+                    child : IconButton(
+                        icon : Icon(Icons.history),
                         color: Color(0xff415EF6),
+                        onPressed: (){
+                          Navigator.of(context).push(
+                              new MaterialPageRoute(
+                                builder: (context) => new GreatHistoryActivity(user: widget.user,)
+                              )
+                          );
+                        },
                       ),
-                      onTap: () {
-                        openBottomSheet(context);
-                      },
-                    )
                   ),
                   Material(
                     color: Colors.transparent,
@@ -102,9 +115,12 @@ class PointWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Color(0xffEEFBFA),
                     ),
-                    child: Icon(
-                      Icons.redeem,
-                      color: Color(0xff67E4D3),
+                    child: IconButton(
+                      icon : Icon(Icons.redeem),
+                      color: Color(0xff415EF6),
+                      onPressed: (){
+                        openBottomSheet(context);
+                      },
                     ),
                   ),
                   Material(
@@ -184,8 +200,13 @@ class PointWidget extends StatelessWidget {
   }
   openBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      isScrollControlled: true,
+        isScrollControlled: true,
         context: context,
-        builder: (BuildContext context) =>  Wrap(children: [RedeemWidget(user: user,)]));
-    }
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0)),
+        ),
+        builder: (BuildContext context) =>  Wrap(children: [RedeemWidget(user: widget.user)]));
+  }
 }

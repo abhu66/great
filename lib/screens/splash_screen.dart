@@ -65,15 +65,6 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
           width: 200.0,
           height: 100.0,
         ),
-//        child: RotationTransition(
-//          turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
-//          child:  Image.asset(
-//            "assets/images/garuda_indonesia_3x.png",
-//            width: 200.0,
-//            height: 100.0,
-//          ),
-//        ),
-
       ),
     );
   }

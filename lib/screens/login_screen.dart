@@ -7,6 +7,7 @@ import 'package:garuda_cabin_mobile/database/database_helper.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
 import 'package:garuda_cabin_mobile/presenters/login_presenter.dart';
 import 'package:garuda_cabin_mobile/utils/base_widget.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -49,9 +50,9 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+//    SystemChrome.setPreferredOrientations([
+//      DeviceOrientation.portraitUp,
+//    ]);
     return Scaffold(
         key : _scaffoldKey,
         backgroundColor: Colors.blue,
@@ -161,30 +162,25 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
 
   Widget _buildButtonLogin(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 20.0),
-        ),
-        InkWell(
-          onTap: () {
-            //_loginProcess();
-          }, //
-          child: Container(
-            width: double.infinity,
-            child: RaisedButton(
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5.0),
-                  side: BorderSide(color: Colors.transparent)),
-              onPressed: () {
-                _loginProcess();
-              },
-              color: Colors.white,
-              textColor: Colors.blue,
-              child: _isLoading ? _loadingIndicator():
-                  Text("Log in".toUpperCase(), style: TextStyle(fontSize: 14)),
+        SizedBox(height: 15,),
+        SizedBox(
+          height: 35.0,
+          child: RaisedButton(
+            elevation: 0.0,
+            color: Color(0xffF3F3FE),
+            child: Center(
+              child: _isLoading == true ? _loadingIndicator() : Text(
+                'Login',
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
+            onPressed: () {
+              _loginProcess();
+            },
           ),
-        )
+        ),
       ],
     );
   }
@@ -225,11 +221,15 @@ class _LoginScreenState extends State<LoginScreen> implements LoginScreenContrac
     return Container(
         width: 20.0,
         height: 20.0,
-        child: (CircularProgressIndicator(
+        child:
+//        JumpingDotsProgressIndicator(
+//          fontSize: 20.0,
+//        ),
+        (CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(
             Colors.blue,
           ),
-          strokeWidth: 3.0,
+          strokeWidth: 2.0,
         ))
     );
   }
