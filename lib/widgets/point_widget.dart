@@ -4,9 +4,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:garuda_cabin_mobile/activitys/great_history.dart';
-import 'package:garuda_cabin_mobile/models/master_point.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
-import 'package:garuda_cabin_mobile/presenters/master_point_presenter.dart';
 import 'package:garuda_cabin_mobile/services/ApiService.dart';
 import 'package:garuda_cabin_mobile/widgets/redeem_widget.dart';
 
@@ -20,6 +18,34 @@ class PointWidget extends StatefulWidget {
 }
 
 class _PointWidgetState extends State<PointWidget> {
+
+  bool _isLoading = false;
+  String totalPoint = "";
+  ApiService _apiService = new ApiService();
+
+  @override
+  void initState(){
+    super.initState();
+    getTotalPoint();
+  }
+
+  void getTotalPoint(){
+    setState(() {
+      _isLoading = true;
+    });
+    _apiService.getTotalPoint(widget.user).then((value){
+      print("Value $value");
+      totalPoint = value;
+    }).catchError((err){
+      print("gagal $err");
+      _isLoading = false;
+    }).whenComplete((){
+      setState(() {
+        _isLoading = false;
+      });
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +73,14 @@ class _PointWidgetState extends State<PointWidget> {
               ),
               Material(
                 color: Colors.transparent,
-                child: Text(
-                  widget.user.total_point,
+                child: _isLoading == true ? _loadingIndicator() : Text(totalPoint,
                   style: TextStyle(
                     color: Color(0xff464855),
                     fontFamily: 'Regular',
                     fontSize: 16,
                   ),
                 ),
-              )
+              ),
             ],
           ),
           SizedBox(
@@ -207,6 +232,22 @@ class _PointWidgetState extends State<PointWidget> {
               topLeft: Radius.circular(15.0),
           topRight: Radius.circular(15.0)),
         ),
-        builder: (BuildContext context) =>  Wrap(children: [RedeemWidget(user: widget.user)]));
+        builder: (BuildContext context) =>  Wrap(children: [RedeemWidget(user: widget.user)])
+    ).whenComplete((){
+      getTotalPoint();
+    });
+  }
+
+  Widget _loadingIndicator() {
+    return Container(
+        width: 10.0,
+        height: 10.0,
+        child: (CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Colors.blue,
+          ),
+          strokeWidth: 3.0,
+        ))
+    );
   }
 }

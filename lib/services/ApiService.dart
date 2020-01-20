@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:garuda_cabin_mobile/models/master_point.dart';
 import 'package:garuda_cabin_mobile/models/transaction_item.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
@@ -13,6 +14,8 @@ class ApiService{
   static final String LOGIN_URL           = BASE_URL + "user/login";
   static final String GET_MASTER_POINT    = BASE_URL + "point/getMasterPoint";
   static final String GET_TRANSACTION_LIST= BASE_URL + "employee/getTransactionList";
+  static final String REDEEM_POINT        = BASE_URL + "/point/redeemPoint";
+  static final String GET_TOTAL_POINT     = BASE_URL + "/user/getTotalPoint";
 
   NetworkUtil  _networkUtil               = new NetworkUtil();
   String API_KEY = "API-KEY";
@@ -105,6 +108,74 @@ class ApiService{
       }
       else {
         return transactionItem.taskFromJson(res['result']);
+      }
+    });
+  }
+
+  Future<String> redeemPoint(User user,String point, String idPoint)async {
+    var body = json.encode(
+      {
+        "identity" : {
+        "reqtxnid" : "ea9e5895-29c9-4f98-97ef-fcb4ba96e56c", // temp hardcoded
+        "reqdate" : DateTime.now().toString(), // current date & time
+        },
+        "parameter" : {
+          "data" : {
+            "nopeg" : user.emp_id,
+            "point" : point,
+            "id_point" : idPoint,
+          }
+        }
+      }
+    );
+    Map headers = <String, String>{
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${user.token}'
+    };
+
+    return _networkUtil.post(REDEEM_POINT,body: body,headers: headers)
+        .then((dynamic res){
+      print(user.token);
+      print(res['status']);
+      if (res['status']['responsecode'] != 200) {
+        return throw new Exception(res["status"]['responsedesc']);
+      }
+      else {
+        return (res['status']['responsecode'].toString());
+      }
+    });
+  }
+
+  Future<String> getTotalPoint(User user) async {
+    var body = json.encode(
+        {
+          "identity" : {
+            "reqtxnid" : "ea9e5895-29c9-4f98-97ef-fcb4ba96e56c", // temp hardcoded
+            "reqdate" : DateTime.now().toString(), // current date & time
+          },
+          "parameter" : {
+            "data" : {
+              "nopeg" : user.emp_id,
+            }
+          }
+        }
+    );
+    Map headers = <String, String>{
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${user.token}'
+    };
+
+    return _networkUtil.post(GET_TOTAL_POINT,body: body,headers: headers)
+        .then((dynamic res){
+      print(user.token);
+      print(res['status']);
+      if (res['status']['responsecode'] != 200) {
+        return throw new Exception(res["status"]['responsedesc']);
+      }
+      else {
+        return (res['result']['last_total'].toString());
       }
     });
   }

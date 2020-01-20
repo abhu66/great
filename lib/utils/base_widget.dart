@@ -83,6 +83,30 @@ class WidgetUtil {
     ).show();
   }
 
+  showSuccessAlert(BuildContext context, AlertStyle style, dynamic title,
+      dynamic description) {
+    Alert(
+      context: context,
+      type: AlertType.success,
+      style: style == null ? alertStyle : style,
+      title: title,
+      desc: description,
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+           // onClickButtonAlert(context, user);
+            Navigator.of(context).pop();
+          },
+          width: 120,
+        )
+      ],
+    ).show();
+  }
+
   showAlertLogout(BuildContext context, User user) {
     Alert(
       context: context,

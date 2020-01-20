@@ -53,7 +53,6 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:garuda_cabin_mobile/models/master_point.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
 import 'package:garuda_cabin_mobile/presenters/master_point_presenter.dart';
+import 'package:garuda_cabin_mobile/utils/base_widget.dart';
 
 class RedeemWidget extends StatefulWidget {
   RedeemWidget({Key key, this.user}) : super(key: key);
@@ -22,12 +23,18 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
   bool _isLoading = false;
   MasterPointPresenter _masterPointPresenter;
   List<MasterPoint> listMasterPoints;
+  WidgetUtil _widgetUtil = new WidgetUtil();
+  String pointItem, idPoint;
+  MasterPoint _masterPoint;
 
   _RedeemWidgetState(){
     _masterPointPresenter = new MasterPointPresenter(this);
   }
-  _onSelected(int index) {
-    setState(() => _selectedIndex = index);
+  _onSelected(int index,MasterPoint masterPoint) {
+    setState((){
+      _selectedIndex = index;
+      _masterPoint = masterPoint;
+    });
   }
 
   bool _isSelected = false;
@@ -61,6 +68,7 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
                   height: 1,
                   width: 30.0,
                   color: Colors.grey[300],
+
                 ),
                 SizedBox(
                   height: 5,
@@ -121,7 +129,12 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        doRedeem();
+                      },
                     ),
                       absorbing:_selectedIndex != -1 ? false : true ,
                     ),
@@ -154,7 +167,7 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
                     ? Icon(Icons.check_circle)
                     : Icon(Icons.check_circle_outline),
                 onTap: () {
-                  _onSelected(index);
+                  _onSelected(index,masterPoin);
                 },
               ),
             );
@@ -178,7 +191,10 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
 
   @override
   void onLoginError(String errorTxt) {
-    // TODO: implement onLoginError
+    setState(() {
+      _isLoading = false;
+    });
+    _widgetUtil.showErrorAlert(context,null, 'Failed', errorTxt);
   }
 
   @override
@@ -188,5 +204,25 @@ class _RedeemWidgetState extends State<RedeemWidget> implements MasterPointContr
       _isLoading = false;
       listMasterPoints = masterPoints;
     });
+  }
+
+  @override
+  void onRedeemError(String errorTxt) {
+    setState(() {
+      _isLoading = false;
+    });
+    _widgetUtil.showErrorAlert(context, null, "Failed", errorTxt);
+  }
+
+  @override
+  void onRedeemSuccess(String successText) {
+    setState(() {
+      _isLoading = false;
+    });
+    _widgetUtil.showSuccessAlert(context, null, "Success", "Your redeem request has been processed");
+  }
+
+  void doRedeem(){
+    _masterPointPresenter.doRedeemPoint(widget.user,_masterPoint.point,_masterPoint.id_point);
   }
 }
