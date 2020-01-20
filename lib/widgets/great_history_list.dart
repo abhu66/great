@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:garuda_cabin_mobile/models/transaction_item.dart';
 import 'package:garuda_cabin_mobile/models/user.dart';
 import 'package:garuda_cabin_mobile/presenters/history_presenter.dart';
+import 'package:garuda_cabin_mobile/utils/base_widget.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 class GreatHistoryListWidget extends StatefulWidget{
@@ -26,7 +27,7 @@ class GreatHistoryListWidget extends StatefulWidget{
 
 class _GreatHistoryListState extends State<GreatHistoryListWidget>{
   final ScrollController _scrollController = new ScrollController();
-
+  WidgetUtil _widgetUtil = new WidgetUtil();
 
   List data = [
     {"nama":"absadsdfsdfsdfsdfsdfsdu","tanggal":"12-12-2019","points":"1000","status":"redeem"},
@@ -60,6 +61,7 @@ class _GreatHistoryListState extends State<GreatHistoryListWidget>{
         groupSeparatorBuilder: _buildGroupSeparator,
         sort: false,
         controller: _scrollController,
+        physics: BouncingScrollPhysics(),
         itemBuilder: (context,elements) {
           return Container(
             color: Colors.white,
@@ -113,8 +115,7 @@ class _GreatHistoryListState extends State<GreatHistoryListWidget>{
                               ],
                           ),
                           onTap: () {
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => new HistoryDetailScreen(history: elements))
-                            // );
+                            _widgetUtil.showRemarks(context, "Remark", elements.remark != "" ? elements.remark : "No Remark");
                           },
                       ),
                     ),

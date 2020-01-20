@@ -199,6 +199,29 @@ class WidgetUtil {
         });
   }
 
+  showRemarks(BuildContext context,String title, dynamic p){
+    Alert(
+        context: context,
+        title: title,
+        style: alertStyle,
+        content: Column(
+          children: <Widget>[
+            Text(p,style: TextStyle(fontSize: 12.0),),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: (){
+               Navigator.of(context).pop(false);
+            },
+            child: Text(
+              "Close",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
+  }
+
   showDatePicker(BuildContext context, bool _isStartDate) {
     String _date = "";
     return TextFormField(
